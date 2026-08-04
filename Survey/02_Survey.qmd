@@ -1,0 +1,395 @@
+---
+# General survey settings
+
+theme-settings:
+  theme: sandstone
+  barposition: none
+  footer-left: "Københavns Universitet"
+  footer-center: "Institut for Statskundskab"
+  footer-right: "Spørgeskema"
+
+survey-settings:
+  show-previous: false
+  use-cookies: false 
+  auto-scroll: false
+  rate-survey: false
+  system-language: en
+  highlight-unanswered: true
+  highlight-color: blue
+  capture-metadata: false
+  all-required: true 
+    
+---
+
+```{r}
+library(surveydown)
+library(dplyr)
+library(kableExtra)
+library(shiny)
+```
+
+--- Intro
+
+<div style="text-align: center;">
+<img src="images/ku_logo_dk_hh.png" width="300px">
+</div>
+
+**Om undersøgelsen**<br>
+Velkommen til dette spørgeskema. Spørgeskemaet er en del af et kandidatspeciale ved Institut for Statskundskab, Københavns Universitet. Undersøgelsen handler om holdninger til politiske kandidater, og spørgeskemaet tager cirka 7-8 minutter at besvare. 
+
+**Anonymitet og fortrolighed**<br>
+Din deltagelse er frivillig, og du kan til enhver tid afbryde besvarelsen. Alle svar er anonyme, og data opbevares sikkert og i overensstemmelse med GDPR. Det vil sige, at datamaterialet på intet tidspunkt vil blive anvendt på en måde, hvor dine oplysninger eller besvarelser kan føres tilbage til dig.
+
+**Deltagelse i lodtrækning om gavekort**<br>
+Ønsker du at deltage i lodtrækningen om et gavekort til et valgfrit supermarked på 500 kr., kan du tilkendegive dette i slutningen af spørgeskemaet. Du vil her få mulighed for at gå til en side, hvor du kan indtaste din e-mail. Din e-mail gemmes ikke sammen med din besvarelse og slettes så snart vinderen er kontaktet. Vinderen kontaktes direkte.
+
+**Kontakt**<br>
+Har du spørgsmål til undersøgelsen, er du velkommen til at kontakte mig på mail: hxb556@alumni.ku.dk
+
+På forhånd mange tak!<br>
+Med venlig hilsen<br>
+Albert Obling Høeg
+
+--- Background
+
+Først vil du blive stillet et par spørgsmål om dig selv
+
+```{r}
+sd_question(
+  type  = 'mc',
+  id    = 'koen',
+  label = "Hvad er dit køn?",
+  option = c(
+    'Mand'    = 'Mand',
+    'Kvinde' = 'Kvinde',
+    'Andet'   = 'Andet',
+    'Ønsker ikke at oplyse' = 'Onsker_ikke'
+  )
+)
+
+sd_question(
+  type  = "select",
+  id    = "alder",
+  label = "Hvad er dit fødselsår?",
+  option = as.character(2008:1924)
+)
+
+sd_question(
+  type  = 'mc',
+  id    = 'uddannelse',
+  label = "Hvad er din højest gennemførte uddannelse? 
+          (Hvis du er i gang med en uddannelse, så vælg niveauet på denne)",
+  option = c(
+    'Grundskole'    = 'grundskole',
+    'Gymnasial uddannelse' = 'gymnasial',
+    'Erhvervsuddannelse'   = 'erhvervsuddannelse',
+    'Kort videregående uddannelse (fx erhvervsakademigrad eller akademigrad)' = 'kort_videre',
+    'Mellemlang videregående uddannelse (fx professionsbachelor eller bachelorgrad)' = 'mellemlang_videre',
+    'Lang videregående uddannelse (fx kandidatgrad eller mastergrad)' = 'lang_videre',
+    'Forskeruddannelse (ph.d. grad)' = 'forsker',
+    'Anden uddannelse' = 'anden',
+    'Ved ikke' = 'ved_ikke'
+  )
+)
+
+sd_question(
+  type  = 'mc',
+  id    = 'region',
+  label = "Hvilken region bor du i?",
+  option = c(
+    'Region Hovedstaden' = 'hovedstaden',
+    'Region Midtjylland' = 'midtjylland',
+    'Region Nordjylland' = 'nordjylland',
+    'Region Sjælland'    = 'sjaelland',
+    'Region Syddanmark'  = 'syddanmark',
+    'Ved ikke'           = 'ved_ikke'
+  )
+)
+
+```
+
+--- issue_positions
+
+De følgende spørgsmål handler om dine politiske holdninger
+
+```{r}
+sd_question(
+  type = "mc",
+  id = "immigration",
+  label = "Hvilket af de følgende udsagn om den danske udlændingepolitik er du mest enig i?",
+  option = c(
+    "Udlændingepolitikken bør være strammere end i dag" = "1",
+    "Udlændingepolitikken bør fastholdes som i dag" = "2",
+    "Udlændingepolitikken bør være mere åben end i dag" = "3"
+  )
+)
+sd_question(
+  type = "mc",
+  id = "middleim",
+  label = "Hvis du skal vælge, hvilket af de to øvrige udsagn om den danske udlændingepolitik hælder du så mest til at være enig i?",
+  option = c(
+    "Udlændingepolitikken bør være strammere end i dag" = "1",
+    "Udlændingepolitikken bør være mere åben end i dag" = "3"
+  )
+)
+```
+
+
+```{r}
+sd_question(
+  type = "mc",
+  id = "econ",
+  label = "Hvilket af de følgende udsagn om økonomisk politik er du mest enig i?",
+  option = c(
+    "Skatterne bør sænkes, selvom det betyder mindre offentlig velfærd" = "1",
+    "Skatterne og den offentlige velfærd bør fastholdes på det nuværende niveau" = "2",
+    "Den offentlige velfærd bør øges, selvom det betyder højere skatter" = "3"
+  )
+)
+sd_question(
+  type = "mc",
+  id = "middleecon",
+  label = "Hvis du skal vælge, hvilket af de to øvrige udsagn om økonomisk politik hælder du så mest til at være enig i?",
+  option = c(
+    "Skatterne bør sænkes, selvom det betyder mindre offentlig velfærd" = "1",
+    "Den offentlige velfærd bør øges, selvom det betyder højere skatter" = "3"
+  )
+)
+```
+
+
+
+--- party_and_trust
+
+```{r}
+sd_question(
+  type  = "select",
+  id    = "party_vote",
+  label = "Hvilket parti stemte du på ved det seneste folketingsvalg?",
+  option = c(
+    "Socialdemokratiet"                        = "socialdemokratiet",
+    "Radikale Venstre"                         = "radikale",
+    "Det Konservative Folkeparti"              = "konservative",
+    "SF – Socialistisk Folkeparti"             = "sf",
+    "Borgernes Parti"                          = "borgernes_parti",
+    "Liberal Alliance"                         = "liberal_alliance",
+    "Moderaterne"                              = "moderaterne",
+    "Dansk Folkeparti"                         = "dansk_folkeparti",
+    "Venstre"                                  = "venstre",
+    "Danmarksdemokraterne"                     = "danmarksdemokraterne",
+    "Enhedslisten"                             = "enhedslisten",
+    "Alternativet"                             = "alternativet",
+    "Stemte på en kandidat udenfor partierne"  = "udenfor_parti",
+    "Stemte blankt"                            = "blankt",
+    "Stemte ikke"                              = "stemte_ikke",
+    "Ønsker ikke at oplyse"                    = "onsker_ikke"
+  )
+)
+
+sd_question(
+  type = "mc",
+  id = "trust",
+  label = "På en skala fra 0 til 10, hvor stor tillid har du generelt til danske politikere?<br><br>
+           0 = Ingen tillid overhovedet, 10 = Fuld tillid",
+  option = c(
+    "0 (Ingen tillid overhovedet)" = "0",
+    "1" = "1",
+    "2" = "2",
+    "3" = "3",
+    "4" = "4",
+    "5" = "5",
+    "6" = "6",
+    "7" = "7",
+    "8" = "8",
+    "9" = "9",
+    "10 (Fuld tillid)" = "10"
+  )
+)
+```
+
+
+--- cbc_intro
+
+På de følgende sider vil du blive præsenteret for en kort beskrivelse af to fiktive folketingskandidater. Du bedes herefter tage stilling til hvilken af kandidaterne, du ville foretrække at stemme på, hvis der var valg i morgen. 
+
+Selv hvis du ikke bryder dig om nogle af de to kandidater, bedes du alligevel vælge den kandidat, du ville foretrække.
+
+Du vil blive præsenteret for i alt 5 par af kandidater, som du skal vælge imellem. Husk at læse beskrivelserne igennem.
+
+
+```{r}
+cbc_options <- c(
+  "Kandidat A" = "option_1",   
+  "Kandidat B" = "option_2"
+)
+```
+
+--- cbc_q1_page
+
+<center>
+### Læs beskrivelsen nedenfor og vælg herefter mellem de to kandidater (1/5)
+</center>
+```{r}
+sd_output("cbc1_table")
+
+sd_question(
+  type   = 'mc_buttons',
+  id     = 'cbc_q1',
+  label  = "Hvilken kandidat ville du foretrække?",
+  option = cbc_options, 
+  width = "350px"
+)
+```
+
+--- cbc_q2_page
+
+<center>
+### Læs beskrivelsen nedenfor og vælg herefter mellem de to kandidater (2/5)
+</center>
+```{r}
+sd_output("cbc2_table")
+
+sd_question(
+  type   = 'mc_buttons',
+  id     = 'cbc_q2',
+  label  = "Hvilken kandidat ville du foretrække?",
+  option = cbc_options, 
+  width = "350px"
+)
+```
+
+--- cbc_q3_page
+
+<center>
+### Læs beskrivelsen nedenfor og vælg herefter mellem de to kandidater (3/5)
+</center>
+```{r}
+sd_output("cbc3_table")
+
+sd_question(
+  type   = 'mc_buttons',
+  id     = 'cbc_q3',
+  label  = "Hvilken kandidat ville du foretrække?",
+  option = cbc_options, 
+  width = "350px"
+)
+```
+
+--- cbc_q4_page
+
+<center>
+### Læs beskrivelsen nedenfor og vælg herefter mellem de to kandidater (4/5)
+</center>
+```{r}
+sd_output("cbc4_table")
+
+sd_question(
+  type   = 'mc_buttons',
+  id     = 'cbc_q4',
+  label  = "Hvilken kandidat ville du foretrække?",
+  option = cbc_options, 
+  width = "350px"
+)
+```
+
+--- cbc_q5_page
+
+<center>
+### Læs beskrivelsen nedenfor og vælg herefter mellem de to kandidater (5/5)
+</center>
+```{r}
+sd_output("cbc5_table")
+
+sd_question(
+  type   = 'mc_buttons',
+  id     = 'cbc_q5',
+  label  = "Hvilken kandidat ville du foretrække?",
+  option = cbc_options, 
+  width = "350px"
+)
+```
+
+--- single_profile_intro
+
+Du vil nu igen blive præsenteret for en kort fiktiv beskrivelse af en folketingskandidat. Denne gang præsenteres du kun for 1 kandidat af gangen, hvorefter du vil blive stillet et par korte spørgsmål om din holdning til kandidaten.
+
+Du vil blive præsenteret for i alt 2 kandidater på denne måde.
+
+--- single_profile_1
+
+<center>
+### Læs beskrivelsen nedenfor og besvar herefter spørgsmålene om kandidaten (1/2)
+</center>
+```{r}
+sd_output("single_table_1")
+
+rows_1 <- c(
+  "Kandidaten virker tillidsvækkende"  = "trust_1",
+  "Kandidaten virker kompetent" = "competent_1",
+  "Kandidaten virker egnet som politiker" = "fitforoffice_1",
+  "Kandidaten virker som en ordentlig person" = "decency_1",
+  "Jeg ville overveje at stemme på kandidaten" = "voteprop_1"
+)
+
+sd_question(
+  type   = "matrix",
+  id     = "candidate_rating_1",
+  label  = "Hvor enig eller uenig er du i følgende?",
+  row    = rows_1,
+  option = c(
+    "Meget uenig"   = "1",
+    "Delvist uenig"         = "2",
+    "Hverken enig eller uenig" = "3",
+    "Delvist enig"  = "4",
+    "Meget enig"          = "5"
+  )
+)
+```
+
+--- single_profile_2
+
+<center>
+### Læs beskrivelsen nedenfor og besvar herefter spørgsmålene om kandidaten (2/2)
+</center>
+```{r}
+sd_output("single_table_2")
+
+rows_2 <- c(
+  "Kandidaten virker tillidsvækkende"  = "trust_2",
+  "Kandidaten virker kompetent" = "competent_2",
+  "Kandidaten virker egnet som politiker" = "fitforoffice_2",
+  "Kandidaten virker som en ordentlig person" = "decency_2",
+  "Jeg ville overveje at stemme på kandidaten" = "voteprop_2"
+)
+
+sd_question(
+  type   = "matrix",
+  id     = "candidate_rating_2",
+  label  = "Hvor enig eller uenig er du i følgende?",
+  row    = rows_2,
+    option = c(
+    "Meget uenig"   = "1",
+    "Delvist uenig"         = "2",
+    "Hverken enig eller uenig" = "3",
+    "Delvist enig"  = "4",
+    "Meget enig"          = "5"
+  )
+)
+```
+
+
+--- end_normal
+
+## Tusind tak for din besvarelse af spørgeskemaet
+
+Din besvarelse er en stor hjælp til mit kandidatspeciale. De politiske kandidater, som du er blevet præsenteret for i dette spørgeskema, er fiktive og har således ikke tilknytning til konkrete personer. Din besvarelse bruges til at undersøge, hvordan vælgere afvejer forskellige karakteristika, når de vælger mellem politiske kandidater. 
+
+Ønsker du at deltage i lodtrækningen om et gavekort til et valgfrit supermarked på 500 kr. skal du klikke på nedenstående link, som vil føre dig til en side, hvor du kan indtaste din e-mail. Din e-mail kan ikke kobles til din besvarelse, og din besvarelse vil derfor fortsat være anonym. Vinderen kontaktes direkte senest d. 1. august 2026.
+
+Ønsker du ikke at deltage i lodtrækningen kan du blot lukke siden ned.
+
+[Klik her for at deltage i lodtrækningen](https://www.survey-xact.dk/LinkCollector?key=XXUDJZ9CS595) 
+
+```{r}
+sd_close()
+```
